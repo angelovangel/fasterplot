@@ -1,0 +1,12 @@
+[package]
+name = "fasterplot"
+description = "Calculate base yield over phred scores or lengths for a fastx file"
+version = "0.1.0"
+license = "MIT"
+keywords = ["fastq", "bioinformatics"]
+edition = "2021"
+
+[dependencies]
+clap = { version = "4.5.20", features = ["derive"] }
+kseq = "0.5.3"
+histo = "1.0.0"
