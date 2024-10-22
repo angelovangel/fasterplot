@@ -1,20 +1,32 @@
 use std::{collections::BTreeMap, process::exit};
 use clap::{Parser, Args};
+use clap::builder::styling::*;
 use kseq::parse_path;
-
 extern crate histo;
 use histo::Histogram;
 
 // here at least one of Flags is required, multiple are not allowed, and infile is positional required
 #[derive(Parser)]
-#[command(version, about, long_about = None)]
+#[command(
+    version, about, long_about = None, 
+    // clap v4 is not colored anymore, have to be explicit
+    styles = Styles::styled()
+        .header(AnsiColor::Yellow.on_default())
+        .usage(AnsiColor::Yellow.on_default())
+        .literal(AnsiColor::Green.on_default())
+        .placeholder(AnsiColor::Green.on_default())
+)
+]
 struct Cli {
     #[arg(required = true)]
     infile: Option<String>,
+    
     #[command(flatten)]
     flags: Flags,
+    
     #[arg(short ='x', long, required = false, help = "output histogram instead of raw data")]
     hist: bool,
+    
     #[arg(short ='s', 
         long = "skip", 
         required = false, 
@@ -23,17 +35,19 @@ struct Cli {
         help = "skip every nth read [0..1000] to speedup processing for large files")
     ]
     skip: u16,
+
     #[arg(short, long, 
-        required = false, 
+        required = false,
         default_value_t = 50000, 
-        value_parser = clap::value_parser!(u32).range(100..500000),
+        value_parser = clap::value_parser!(u32).range(100..500001),
         help = "max length to use in len output [1000..500000]")
     ]
     maxlen: u32,
+    
     #[arg(short, long, 
         required = false, 
         default_value_t = 500,
-        value_parser = clap::value_parser!(u32).range(10..1000),
+        value_parser = clap::value_parser!(u32).range(10..1001),
         help = "bin step in len output [10..1000]")
     ]
     window: u32,
@@ -51,6 +65,11 @@ struct Flags {
 }
 
 
+// struct to hold read counts and bases per len bin
+// struct Lenbin {
+//     readcount: i64,
+//     bases: i64,
+// } 
 fn main() {
     let cli = Cli::parse();
     let fastqfile = cli.infile.unwrap();
@@ -148,7 +167,7 @@ fn main() {
         for l in lens{
             // get the next back key for this read length
             if l <= 1 { // crashes if l == 1, so 
-                lenhash.insert(1, 1);
+                //lenhash.insert(1, 1);
                 continue;
             }
             let mykey = lenhash.range(l..).next().unwrap().0;
