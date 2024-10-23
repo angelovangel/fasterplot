@@ -175,6 +175,10 @@ fn main() {
         }
         
         // print output
+        let maxbin_bases = lenhash.iter().max_by_key( |p| p.1 ).unwrap().1; 
+        println!("# maxbin:\t{}", lenhash.iter().max_by_key( |p| p.1 ).unwrap().0);
+        println!("# total_bases:\t{}", bases);
+        println!("# maxbin_bases:\t{}", maxbin_bases);
         println!("lenbin\tbases\tbases_above_len\tpercent_at_lenbin\tpercent_above_lenbin");
         for (key, value) in lenhash {
             cumbases -= value;
